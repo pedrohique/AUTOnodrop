@@ -36,14 +36,13 @@ def cria_relat(cribs, ontem, anteontem):
 
         def select_trans_nodrop(eventdate, anteontem, employee, cribin, cursor): #seleciona todas as transações especificadas no nodrop
             try:
-                cursor.execute(f"select transnumber, crib, bin, item, employee, Transdate, quantity, TypeDescription "
+                cursor.execute(f"select transnumber, crib, bin, item, employee, Transdate, quantity, TypeDescription, User1, User2, binqty "
                            f"from Trans where employee = '{employee}' and TypeDescription = 'ISSUE' and CribBin = '{cribin}' and transdate >= CONVERT(datetime, '{anteontem}T00:00:00') and Status IS NULL")
                 transacoes = cursor.fetchall()
-                list_trans_nodrop = []
+                list_trans_nodrop = [] #lista de transações possiveis para o nodrop vai retornar sempre a primeira ou index 0
 
 
-                for trans in transacoes:
-                    #print(trans)
+                for trans in transacoes: #procura as transações no dia de ontem
                     transnumber = trans[0]
                     crib = trans[1]
                     bin = trans[2]
@@ -53,13 +52,17 @@ def cria_relat(cribs, ontem, anteontem):
                     transdate_limpo = transdate.strftime('%Y-%m-%d')
                     quantity = trans[6]
                     typedesc = trans[7]
+                    user1 = trans[8]
+                    user2 = trans[9]
+                    binqty = trans[10]
 
                     if transdate_limpo == eventdate:
                         list_trans_nodrop.append(
-                            f'{transnumber}, {crib}, {bin}, {item}, {employee_trans}, {transdate}, {quantity}, {typedesc},NAO QUEDA')
+                            f'{transnumber}, {crib}, {bin}, {item}, {employee_trans}, {transdate}, {quantity}, {typedesc},{user1}, {user2}, {binqty},NAO QUEDA')
                         return list_trans_nodrop[0]
 
-                if len(list_trans_nodrop) == 0:
+
+                if len(list_trans_nodrop) == 0: #Caso não encontre verifica se as transações estão na data de ante ontem
                     for trans in transacoes:
                         transnumber = trans[0]
                         crib = trans[1]
@@ -70,10 +73,14 @@ def cria_relat(cribs, ontem, anteontem):
                         transdate_limpo = transdate.strftime('%Y-%m-%d')
                         quantity = trans[6]
                         typedesc = trans[7]
+                        user1 = trans[8]
+                        user2 = trans[9]
+                        binqty = trans[10]
                         if transdate_limpo == anteontem:
                             list_trans_nodrop.append(
-                                f'{transnumber}, {crib}, {bin}, {item}, {employee_trans}, {transdate}, {quantity}, {typedesc},NAO QUEDA')
+                                f'{transnumber}, {crib}, {bin}, {item}, {employee_trans}, {transdate}, {quantity}, {typedesc},{user1}, {user2}, {binqty},NAO QUEDA')
                             return list_trans_nodrop[0]
+
                 logging.info('transações de nodrop selecionadas com sucesso.')
             except:
                 logging.warning('Não foi possivel selecionar as transações de nodrop')
@@ -98,8 +105,9 @@ def cria_relat(cribs, ontem, anteontem):
                     if crib in cribs:
                         if eventlogdate == ontem:
                             list_eventlog.append([employee, cribin, crib, eventlogdate])
+                            #print(cribin)
                             trans = select_trans_nodrop(ontem, anteontem, employee, cribin, cursor)#chama a função que retornara a transação.
-                            #print(trans)
+                            #caso a transação ja tenha sido cancelada manualmente ela vai retornar none
                             if trans is not None:
                                 trans = trans.split(',')
                                 transnumber = trans[0].replace("'", '')
@@ -110,8 +118,11 @@ def cria_relat(cribs, ontem, anteontem):
                                 Transdate = trans[5]
                                 quantity = trans[6].replace(' ', '')
                                 TypeDescription = trans[7].replace(' ', '')
-                                type_trans = trans[8]
-                                dict_nodrops[transnumber] = [str(crib), bin, item, employee, str(Transdate), str(quantity), TypeDescription, type_trans]
+                                #type_trans = trans[8]
+                                user1 = trans[8].replace(' ', '')
+                                user2 = trans[9].replace(' ', '')
+                                binqty = trans[10].replace(' ', '')
+                                dict_nodrops[transnumber] = [str(crib), bin, item, employee, str(Transdate), str(quantity), TypeDescription, user1, user2, binqty]
 
 
 
@@ -134,4 +145,4 @@ def cria_relat(cribs, ontem, anteontem):
     print(list_eventlog)
     print(len(list_eventlog))
 
-    '''funcionando, agora precisa trabalhar no cancelamento'''
+    '''dados necessarios adicionados, pronto para inicio dos modulos'''
