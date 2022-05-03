@@ -30,6 +30,14 @@ def cria_relat(cribs, ontem, anteontem):
         except:
             logging.error('não foi possivel conectar ao banco de dados')
 
+    def count_cancel(cursor, employee, cribin, anteontem):
+        cursor.execute(
+            f"select transnumber, RelatedKey, crib, bin, item, employee, Transdate, quantity, TypeDescription, User1, User2, binqty "
+            f"from Trans where issuedto = '{employee}' and TypeDescription = 'CANCL' and CribBin = '{cribin}' and transdate >= CONVERT(datetime, '{anteontem}T00:00:00') ")
+        transacoes = cursor.fetchall()
+        for i in transacoes:
+            print(i)
+
 
     def select_nodrops(cursor, cribs, ontem, anteontem):
 
@@ -40,7 +48,7 @@ def cria_relat(cribs, ontem, anteontem):
                            f"from Trans where employee = '{employee}' and TypeDescription = 'ISSUE' and CribBin = '{cribin}' and transdate >= CONVERT(datetime, '{anteontem}T00:00:00') and Status IS NULL")
                 transacoes = cursor.fetchall()
                 list_trans_nodrop = [] #lista de transações possiveis para o nodrop vai retornar sempre a primeira ou index 0
-
+                contador = 0
 
                 for trans in transacoes: #procura as transações no dia de ontem
                     transnumber = trans[0]
@@ -55,6 +63,9 @@ def cria_relat(cribs, ontem, anteontem):
                     user1 = trans[8]
                     user2 = trans[9]
                     binqty = trans[10]
+                    cribbin = f'{crib}-{bin}'
+                    contador += contador+1
+
 
                     if transdate_limpo == eventdate:
                         list_trans_nodrop.append(
@@ -91,9 +102,11 @@ def cria_relat(cribs, ontem, anteontem):
             nodrops = cursor.fetchall()
             list_eventlog = []
             dict_nodrops = {}
-
+            '''
+            #adicionar um verificador na lista de nodrops, caso exista cancels com o nodrop definido eliminar ele'''
 
             for i in nodrops:
+                print(i)
                 msg = i[1].split(' ')
                 if msg[0] == 'No' and msg[1] == 'Drop' and msg[2] == 'detected':
                     employee = msg[8]
@@ -141,8 +154,7 @@ def cria_relat(cribs, ontem, anteontem):
 
     dict_nodrops, list_eventlog = select_nodrops(cursor, cribs, ontem, anteontem)
     #select_nodrops(cursor, cribs, ontem, anteontem)
-    print(dict_nodrops)
-    print(list_eventlog)
-    print(len(list_eventlog))
+
+    return dict_nodrops
 
     '''dados necessarios adicionados, pronto para inicio dos modulos'''
