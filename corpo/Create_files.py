@@ -1,7 +1,8 @@
 import pandas as pd
+from datetime import datetime, date
 
 
-def Create_New_Trans(dados, pasta_prontos, pasta_crib):
+def Create_New_Trans(dados, pasta_prontos, pasta_crib, data):
     dados_new = {'station':[], 'bin':[], 'Item':[], 'employee':[], 'User1':[], 'User2':[],  'quantity':[], 'Transdate':[],
                  'Transtime':[],'type':[],'TypeDescription':[],'binqty':[],'RelatedKey':[],'CribBin':[],'IssuedTo':[],
                  'Crib':[],'UsageType':[] }
@@ -47,11 +48,11 @@ def Create_New_Trans(dados, pasta_prontos, pasta_crib):
 
     df = pd.DataFrame.from_dict(dados_new)
 
-    df.to_csv(pasta_prontos+'-trans.csv', index=False)
-    df.to_csv(pasta_crib + '-trans.csv', index=False)
+    df.to_csv(pasta_prontos + f'trans-{data}.csv', index=False)
+    df.to_csv(pasta_crib + f'trans-{data}.csv', index=False)
 
 
-def Update_trans(dados, pasta_prontos, pasta_crib):
+def Update_trans(dados, pasta_prontos, pasta_crib, data):
     new_data = {'transnumber': [], 'Status':[]}
     for key in dados.keys():
         transnumber = key
@@ -60,10 +61,10 @@ def Update_trans(dados, pasta_prontos, pasta_crib):
         new_data['Status'].append(status)
     df = pd.DataFrame.from_dict(new_data)
 
-    df.to_csv(pasta_prontos + '-updatetrans.csv', index=False)
-    df.to_csv(pasta_crib + '-updatetrans.csv', index=False)
+    df.to_csv(pasta_prontos + f'updatetrans-{data}.csv', index=False)
+    df.to_csv(pasta_crib + f'updatetrans-{data}.csv', index=False)
 
-def Update_station(dados, pasta_prontos, pasta_crib):
+def Update_station(dados, pasta_prontos, pasta_crib, data):
     new_data = {'Cribbin':[], 'quantity':[], 'BinQuantity':[]}
     for key in dados.keys():
         cribbin = f'{dados[key][0]}-{dados[key][1]}'
@@ -74,10 +75,11 @@ def Update_station(dados, pasta_prontos, pasta_crib):
         new_data['BinQuantity'].append(binquantity)
     df = pd.DataFrame.from_dict(new_data)
 
-    df.to_csv(pasta_prontos + '-updatestation.csv', index=False)
-    df.to_csv(pasta_crib + '-updatestation.csv', index=False)
+    df.to_csv(pasta_prontos + f'updatestation-{data}.csv', index=False)
+    df.to_csv(pasta_crib + f'updatestation-{data}.csv', index=False)
 
 def Cria_Arquivos(dados, pasta_prontos, pasta_crib):
-    Create_New_Trans(dados, pasta_prontos, pasta_crib)
-    Update_trans(dados, pasta_prontos, pasta_crib)
-    Update_station(dados, pasta_prontos, pasta_crib)
+    data = date.today()
+    Create_New_Trans(dados, pasta_prontos, pasta_crib, data)
+    Update_trans(dados, pasta_prontos, pasta_crib, data)
+    Update_station(dados, pasta_prontos, pasta_crib, data)

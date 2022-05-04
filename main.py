@@ -31,7 +31,7 @@ horarios = config.get('funcionamento', 'horarios').replace(' ', '').split(',')
 
 
 nome_arquivo_pronto = config.get('funcionamento', 'nome_arquivo_pronto')
-pasta_prontos = ''#config.get('funcionamento', 'pasta_prontos') + '\\' + nome_arquivo_pronto
+pasta_prontos = config.get('funcionamento', 'pasta_prontos') + '\\' + nome_arquivo_pronto
 pasta_crib = ''#config.get('funcionamento', 'pasta_crib') + '\\' + nome_arquivo_pronto
 
 cribs = config.get('funcionamento', 'cribs').replace(' ', '').split(',')
@@ -43,8 +43,8 @@ print(pasta_crib)
 print(nome_arquivo_pronto)
 
 
-ontem = (datetime.today()-timedelta(days=1)).strftime('%Y-%m-%d')
-anteontem = (datetime.today()-timedelta(days=2)).strftime('%Y-%m-%d')
+ontem ='2022-04-29'# (datetime.today()-timedelta(days=1)).strftime('%Y-%m-%d') #Usar dia 29 como exemplo de bug, verificar o que ocorreu com os cancelamentos do dia 02 '2022-05-02'
+anteontem ='2022-04-28'# (datetime.today()-timedelta(days=2)).strftime('%Y-%m-%d')
 
 
 dados = find_nodrop.cria_relat(cribs, ontem, anteontem)

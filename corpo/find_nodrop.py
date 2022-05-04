@@ -98,58 +98,67 @@ def select_nodrops(cursor, cribs, ontem, anteontem):
 
         try:
             cursor.execute(
-                    f"select EventLogDate, EventLogMessage from EventLog where EventLogKey is null and EventLogProgramName = 'CribMaster' and EventLogDate BETWEEN CONVERT(datetime, '{ontem}T00:00:00') AND CONVERT(datetime, '{ontem}T23:59:59');")
-            nodrops = cursor.fetchall()
+                    f"select EventLogDate, EventLogMessage from EventLog where EventLogKey is null and EventLogProgramName = 'CribMaster' and EventLogDate BETWEEN CONVERT(datetime, '{anteontem}T23:00:00') AND CONVERT(datetime, '{ontem}T23:59:59');")
+            nodrops = cursor.fetchall() #pega todos os nodrops do banco
             list_eventlog = []
             dict_nodrops = {}
-            soma_nodrops = 0
-            soma_cancelamentos = 0
+            soma_nodrops = 0 #soma o numero de nodrops
+            soma_cancelamentos = 0 #soma o numero de transações que foram canceladas manualmente
+            soma_trans = 0 #soma o numero de transações que foram canceladas pelo sistema
+            soma_trans_true = 0 #soma o numero de transações que podem ser canceladas
+            soma_unfind = 0 #soma a quantidade de transações que não foram encontradas
+
 
             for i in nodrops:
-
-                #print(i)
+                '''Limpa a msg sobre o crib extraindo os dados'''
                 msg = i[1].split(' ')
-                if msg[0] == 'No' and msg[1] == 'Drop' and msg[2] == 'detected':
+                if msg[0] == 'No' and msg[1] == 'Drop' and msg[2] == 'detected':  #filtra pelo incio da frase
                     employee = msg[8]
                     cribin = msg[-1]
                     crib = cribin.split('-')
                     crib = int(crib[0])
                     eventlogdate = i[0].strftime('%Y-%m-%d')
-                    # print(ontem, anteontem, employee, cribin, cursor)
-                    # count_cancel(cursor, employee, cribin, anteontem)
 
-                    print(crib)
-                    if crib in cribs:
-                        print(cribs)
-                        if eventlogdate == ontem:
-                            list_eventlog.append([employee, cribin, crib, eventlogdate])
-                            # print(cribin)
+                    if crib in cribs: #seleciona apenas os cribs selecionados no main e adiciona a lista de nodrops
+                        list_eventlog.append([employee, cribin, crib, eventlogdate])
 
-            list_eventlog_base = remove_repetidos(
-                list_eventlog)  # remove nodrops repetidos para realizar a contagem a baixo
+            list_eventlog_base = remove_repetidos(list_eventlog)  # remove nodrops repetidos para realizar a contagem a baixo
 
-            for nodrop_unic in list_eventlog_base:
+            for nodrop_unic in list_eventlog_base: #Para cada nodrop unico no eventlog separa os dados para realizar a contagem na função conunt_cancel
                 print('----------------------------------')
-                # print(nodrop_unic)
+                print(nodrop_unic)
                 employee = nodrop_unic[0]
                 cribin = nodrop_unic[1]
-                crib = nodrop_unic[2]
-                eventlogdate = nodrop_unic[3]
+                # crib = nodrop_unic[2]
+                # eventlogdate = nodrop_unic[3]
                 contagem = list_eventlog.count(nodrop_unic)  # conta quantidade de nodrops
                 print(contagem, 'nodrop')
-                count_cancel_var = count_cancel(cursor, employee, cribin,
-                                                ontem)  # conta quantidade de cancelamentos para cada nodrop unico
+
+                count_cancel_var = count_cancel(cursor, employee, cribin,ontem)  # conta quantidade de cancelamentos para cada nodrop unico
                 print(count_cancel_var, 'cancelamentos')
-                soma_cancelamentos += count_cancel_var
-                soma_nodrops += contagem
-                if contagem > count_cancel_var:
-                    '''se a quantidade de nodrops e cancelamentos for que a de cancelamentos não adiciona transação no dicionario'''
-                    trans = select_trans_nodrop(ontem, anteontem, employee, cribin,
-                                                cursor)  # chama a função que retornara a transação.
-                    print(trans)
+                soma_cancelamentos += count_cancel_var #statisticas
+                soma_nodrops += contagem #statisticas
+
+                cancl_to_do = contagem - count_cancel_var #nodrops que podem ser realizados
+
+                while cancl_to_do != 0:
+
+                    cancl_to_do -= 1 #diminui a quantidade de nodrops que não foram realizados
+                    soma_trans_true += 1 # statisticas soma o numero de transações que podem ser canceladas
+                    print('1  cancelamento possivel')
+
+
+                    trans = select_trans_nodrop(ontem, anteontem, employee, cribin, cursor)  # chama a função que retornara a transação.
+
                     # caso a transação ja tenha sido cancelada manualmente ela vai retornar none
                     if trans is not None:
-                        trans = trans.split(',')
+
+                        soma_trans += 1  # soma o numero de transações que foram canceladas pelo sistema
+                        print('1 transação encontrada')
+
+
+                        '''adiciona a transação no dicionario'''
+                        trans = trans.split(',') #
                         transnumber = trans[0].replace("'", '')
                         crib = trans[1].replace(' ', '')
                         bin = trans[2].replace(' ', '')
@@ -162,11 +171,17 @@ def select_nodrops(cursor, cribs, ontem, anteontem):
                         user1 = trans[8].replace(' ', '')
                         user2 = trans[9].replace(' ', '')
                         binqty = trans[10].replace(' ', '')
+                        print(trans)
                         dict_nodrops[transnumber] = [str(crib), bin, item, employee, str(Transdate), str(quantity),
                                                      TypeDescription, user1, user2, binqty]
+                    else:
+                        print(trans)
+                        soma_unfind += 1  # soma a quantidade de transações que não foram encontradas
 
             logging.info(f'Seleção de nodrops efetuada com sucesso. SOMA DE NODROPS: {soma_nodrops} SOMA DE CANCELAMENTOS: {soma_cancelamentos} ')
-            print(soma_nodrops, soma_cancelamentos)
+            print(f'Nodrops encontrados: {soma_nodrops}, Cancl encontrados: {soma_cancelamentos},Nodrops possiveis: {soma_trans_true}, total de cancelamentos efetuados: {soma_trans}, quantidade de transações que não foram encontradas : {soma_unfind}')
+
+
             if dict_nodrops != None:
                 return dict_nodrops
             else:
