@@ -1,7 +1,7 @@
 import pandas as pd
 
 
-def Create_New_Trans(dados):
+def Create_New_Trans(dados, pasta_prontos, pasta_crib):
     dados_new = {'station':[], 'bin':[], 'Item':[], 'employee':[], 'User1':[], 'User2':[],  'quantity':[], 'Transdate':[],
                  'Transtime':[],'type':[],'TypeDescription':[],'binqty':[],'RelatedKey':[],'CribBin':[],'IssuedTo':[],
                  'Crib':[],'UsageType':[] }
@@ -46,10 +46,12 @@ def Create_New_Trans(dados):
 
 
     df = pd.DataFrame.from_dict(dados_new)
-    df.to_csv('teste_n_trans.csv', index=False)
+
+    df.to_csv(pasta_prontos+'-trans.csv', index=False)
+    df.to_csv(pasta_crib + '-trans.csv', index=False)
 
 
-def Update_trans(dados):
+def Update_trans(dados, pasta_prontos, pasta_crib):
     new_data = {'transnumber': [], 'Status':[]}
     for key in dados.keys():
         transnumber = key
@@ -57,9 +59,11 @@ def Update_trans(dados):
         new_data['transnumber'].append(transnumber)
         new_data['Status'].append(status)
     df = pd.DataFrame.from_dict(new_data)
-    df.to_csv('teste_update_trans.csv', index=False)
 
-def Update_station(dados):
+    df.to_csv(pasta_prontos + '-updatetrans.csv', index=False)
+    df.to_csv(pasta_crib + '-updatetrans.csv', index=False)
+
+def Update_station(dados, pasta_prontos, pasta_crib):
     new_data = {'Cribbin':[], 'quantity':[], 'BinQuantity':[]}
     for key in dados.keys():
         cribbin = f'{dados[key][0]}-{dados[key][1]}'
@@ -69,4 +73,11 @@ def Update_station(dados):
         new_data['quantity'].append(quantity)
         new_data['BinQuantity'].append(binquantity)
     df = pd.DataFrame.from_dict(new_data)
-    df.to_csv('test_updat_crib.csv', index=False)
+
+    df.to_csv(pasta_prontos + '-updatestation.csv', index=False)
+    df.to_csv(pasta_crib + '-updatestation.csv', index=False)
+
+def Cria_Arquivos(dados, pasta_prontos, pasta_crib):
+    Create_New_Trans(dados, pasta_prontos, pasta_crib)
+    Update_trans(dados, pasta_prontos, pasta_crib)
+    Update_station(dados, pasta_prontos, pasta_crib)

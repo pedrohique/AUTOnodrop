@@ -21,40 +21,46 @@ def horario_prox(list_horarios, horario):
 
     return min(list_dif), list_dif.index(min(list_dif))
 
+
+
 config = configparser.ConfigParser()
 config.read('config.ini')
 
 
 horarios = config.get('funcionamento', 'horarios').replace(' ', '').split(',')
-pasta = config.get('funcionamento', 'pasta')
-pasta_prontos = config.get('funcionamento', 'pasta_prontos')
-pasta_crib = config.get('funcionamento', 'pasta_crib')
 
 
-ontem = '2022-04-29'
-anteontem = '2022-04-28'
+nome_arquivo_pronto = config.get('funcionamento', 'nome_arquivo_pronto')
+pasta_prontos = ''#config.get('funcionamento', 'pasta_prontos') + '\\' + nome_arquivo_pronto
+pasta_crib = ''#config.get('funcionamento', 'pasta_crib') + '\\' + nome_arquivo_pronto
 
-cribs_range = range(1,300)
-cribs = [171, 150, 151, 152, 153, 154, 170, 130, 200, 201, 202, 203, 204, 205]
+cribs = config.get('funcionamento', 'cribs').replace(' ', '').split(',')
+cribs = list(map(int, cribs))
 
-nodrops = find_nodrop.cria_relat(cribs, ontem, anteontem)
-Create_files.Create_New_Trans(nodrops)
-Create_files.Update_trans(nodrops)
-Create_files.Update_station(nodrops)
 
+print(pasta_prontos)
+print(pasta_crib)
+print(nome_arquivo_pronto)
+
+
+ontem = (datetime.today()-timedelta(days=1)).strftime('%Y-%m-%d')
+anteontem = (datetime.today()-timedelta(days=2)).strftime('%Y-%m-%d')
+
+
+dados = find_nodrop.cria_relat(cribs, ontem, anteontem)
+
+Create_files.Cria_Arquivos(dados, pasta_prontos, pasta_crib)
+
+'''sistema pronto iniciar testes em homolog com relatorio de emails desativados, verificar cm edilson a criação de uma base nova para rodar os dois em paralelo'''
 # while True:
 #
 #     horario = datetime.today().strftime('%H:%M')
 #     data = datetime.today().strftime('%d-%m-%y-%H-%M')
 #     if horario in horarios:
-#         ontem = '2022-04-29'
-#         anteontem = '2022-04-28'
 #
-#         cribs_range = range(1,300)
-#         cribs = [171, 150, 151, 152, 153, 154, 170, 130, 200, 201, 202, 203, 204, 205]
+#         ontem = (datetime.today()- timedelta(days=1)).strftime('%Y-%m-%d')
+#         anteontem = (datetime.today()- timedelta(days=2)).strftime('%Y-%m-%d')
 #
-#         nodrops = find_nodrop.cria_relat(cribs, ontem, anteontem)
-#         Create_files.Create_New_Trans(nodrops)
-#         Create_files.Update_trans(nodrops)
-#         Create_files.Update_station(nodrops)
-#         #print(nodrops)
+#         dados = find_nodrop.cria_relat(cribs, ontem, anteontem)
+#
+#         Create_files.Cria_Arquivos(dados, pasta_prontos, pasta_crib)
