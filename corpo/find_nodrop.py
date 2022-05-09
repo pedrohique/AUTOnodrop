@@ -97,6 +97,7 @@ def select_nodrops(cursor, cribs, ontem, anteontem):
             return len(transacoes)
 
         try:
+            logging.info('Iniciando pesquisa de nodrops')
             cursor.execute(
                     f"select EventLogDate, EventLogMessage from EventLog where EventLogKey is null and EventLogProgramName = 'CribMaster' and EventLogDate BETWEEN CONVERT(datetime, '{anteontem}T23:00:00') AND CONVERT(datetime, '{ontem}T23:59:59');")
             nodrops = cursor.fetchall() #pega todos os nodrops do banco
@@ -125,17 +126,17 @@ def select_nodrops(cursor, cribs, ontem, anteontem):
             list_eventlog_base = remove_repetidos(list_eventlog)  # remove nodrops repetidos para realizar a contagem a baixo
 
             for nodrop_unic in list_eventlog_base: #Para cada nodrop unico no eventlog separa os dados para realizar a contagem na função conunt_cancel
-                print('----------------------------------')
-                print(nodrop_unic)
+                # print('----------------------------------')
+                # print(nodrop_unic)
                 employee = nodrop_unic[0]
                 cribin = nodrop_unic[1]
                 # crib = nodrop_unic[2]
                 # eventlogdate = nodrop_unic[3]
                 contagem = list_eventlog.count(nodrop_unic)  # conta quantidade de nodrops
-                print(contagem, 'nodrop')
+                # print(contagem, 'nodrop')
 
                 count_cancel_var = count_cancel(cursor, employee, cribin,ontem)  # conta quantidade de cancelamentos para cada nodrop unico
-                print(count_cancel_var, 'cancelamentos')
+                # print(count_cancel_var, 'cancelamentos')
                 soma_cancelamentos += count_cancel_var #statisticas
                 soma_nodrops += contagem #statisticas
 
@@ -145,7 +146,7 @@ def select_nodrops(cursor, cribs, ontem, anteontem):
 
                     cancl_to_do -= 1 #diminui a quantidade de nodrops que não foram realizados
                     soma_trans_true += 1 # statisticas soma o numero de transações que podem ser canceladas
-                    print('1  cancelamento possivel')
+                    # print('1  cancelamento possivel')
 
 
                     trans = select_trans_nodrop(ontem, anteontem, employee, cribin, cursor)  # chama a função que retornara a transação.
@@ -154,7 +155,7 @@ def select_nodrops(cursor, cribs, ontem, anteontem):
                     if trans is not None:
 
                         soma_trans += 1  # soma o numero de transações que foram canceladas pelo sistema
-                        print('1 transação encontrada')
+                        # print('1 transação encontrada')
 
 
                         '''adiciona a transação no dicionario'''
@@ -171,14 +172,14 @@ def select_nodrops(cursor, cribs, ontem, anteontem):
                         user1 = trans[8].replace(' ', '')
                         user2 = trans[9].replace(' ', '')
                         binqty = trans[10].replace(' ', '')
-                        print(trans)
+                        # print(trans)
                         dict_nodrops[transnumber] = [str(crib), bin, item, employee, str(Transdate), str(quantity),
                                                      TypeDescription, user1, user2, binqty]
                     else:
-                        print(trans)
+                        # print(trans)
                         soma_unfind += 1  # soma a quantidade de transações que não foram encontradas
 
-            logging.info(f'Seleção de nodrops efetuada com sucesso. SOMA DE NODROPS: {soma_nodrops} SOMA DE CANCELAMENTOS: {soma_cancelamentos} ')
+            logging.info(f'Nodrops encontrados: {soma_nodrops}, Cancl encontrados: {soma_cancelamentos},Nodrops possiveis: {soma_trans_true}, total de cancelamentos efetuados: {soma_trans}, quantidade de transações que não foram encontradas : {soma_unfind}')
             print(f'Nodrops encontrados: {soma_nodrops}, Cancl encontrados: {soma_cancelamentos},Nodrops possiveis: {soma_trans_true}, total de cancelamentos efetuados: {soma_trans}, quantidade de transações que não foram encontradas : {soma_unfind}')
 
 
