@@ -1,9 +1,9 @@
 import pandas as pd
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 import logging
 
 
-def Create_New_Trans(dados, pasta_prontos, pasta_crib, data):
+def Create_New_Trans(dados, pasta_prontos, pasta_crib, data, data_dados):
     try:
         dados_new = {'station':[], 'bin':[], 'Item':[], 'employee':[], 'User1':[], 'User2':[],  'quantity':[], 'Transdate':[],
                      'Transtime':[],'type':[],'TypeDescription':[],'binqty':[],'RelatedKey':[],'CribBin':[],'IssuedTo':[],
@@ -18,8 +18,8 @@ def Create_New_Trans(dados, pasta_prontos, pasta_crib, data):
             User1 = dados[key][7]
             User2 = dados[key][8]
             quantity = (int(dados[key][5])*-1)
-            Transdate = '02/05/2022'
-            Transtime = '13:27'
+            Transdate = data_dados
+            Transtime = '22:22'
             type = 'X'
             TypeDescription = 'CANCL'
             binqty = (int(dados[key][9])+1)
@@ -60,7 +60,7 @@ def Create_New_Trans(dados, pasta_prontos, pasta_crib, data):
         return False
 
 
-def Update_trans(dados, pasta_prontos, pasta_crib, data):
+def Update_trans(dados, pasta_prontos, pasta_crib, data, data_dados):
     try:
         new_data = {'transnumber': [], 'Status':[]}
         for key in dados.keys():
@@ -79,7 +79,7 @@ def Update_trans(dados, pasta_prontos, pasta_crib, data):
         logging.error('Não foi possivel criar o arquivo de Update Trans')
         return False
 
-def Update_station(dados, pasta_prontos, pasta_crib, data):
+def Update_station(dados, pasta_prontos, pasta_crib, data, data_dados):
     try:
         new_data = {'Cribbin':[], 'quantity':[], 'BinQuantity':[]}
         for key in dados.keys():
@@ -102,10 +102,11 @@ def Update_station(dados, pasta_prontos, pasta_crib, data):
 def Cria_Arquivos(dados, pasta_prontos, pasta_crib):
     logging.info('Iniciando a criação dos arquivos de importação')
     data = datetime.today().strftime('%Y%m%d%I%M%S')
-    print(data)
-    resp_cancl = Create_New_Trans(dados, pasta_prontos, pasta_crib, data)
+    data_dados = ontem = (datetime.today() - timedelta(days=1)).strftime('%d/%m/%Y')
+    print(data_dados)
+    resp_cancl = Create_New_Trans(dados, pasta_prontos, pasta_crib, data, data_dados)
     if resp_cancl == True:
-        resp_update = Update_trans(dados, pasta_prontos, pasta_crib, data)
+        resp_update = Update_trans(dados, pasta_prontos, pasta_crib, data, data_dados)
         if resp_update == True:
-            resp_statio = Update_station(dados, pasta_prontos, pasta_crib, data)
+            resp_statio = Update_station(dados, pasta_prontos, pasta_crib, data, data_dados)
 

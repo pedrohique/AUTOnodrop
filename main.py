@@ -51,14 +51,7 @@ else:
         cribs.append(i)
 
 
-# ontem = (datetime.today()-timedelta(days=1)).strftime('%Y-%m-%d') #Usar dia 29 como exemplo de bug, verificar o que ocorreu com os cancelamentos do dia 02 '2022-05-02'
-# anteontem = (datetime.today()-timedelta(days=2)).strftime('%Y-%m-%d')
-#
-#
-# dados = find_nodrop.cria_relat(cribs, ontem, anteontem)
-#
-#
-# Create_files.Cria_Arquivos(dados, pasta_prontos, pasta_crib)
+
 
 
 '''sistema pronto iniciar testes em homolog com relatorio de emails desativados, verificar cm edilson a criação de uma base nova para rodar os dois em paralelo'''
