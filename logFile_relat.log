@@ -1,9 +1,19 @@
-09/05/2022 11:46:12 AM - INFO:conexão com o banco de dados efetuada com sucesso.
-09/05/2022 11:46:12 AM - INFO:Iniciando pesquisa de nodrops
-09/05/2022 11:46:13 AM - INFO:transações de nodrop selecionadas com sucesso.
-09/05/2022 11:46:13 AM - INFO:transações de nodrop selecionadas com sucesso.
-09/05/2022 11:46:16 AM - INFO:Nodrops encontrados: 13, Cancl encontrados: 1,Nodrops possiveis: 12, total de cancelamentos efetuados: 10, quantidade de transações que não foram encontradas : 2
-09/05/2022 11:46:17 AM - INFO:Iniciando a criação dos arquivos de importação
-09/05/2022 11:46:17 AM - INFO:Arquivo de criação de cancl criado sucesso.
-09/05/2022 11:46:17 AM - INFO:Arquivo de Update criado com sucesso.
-09/05/2022 11:46:17 AM - INFO:Arquivo de atualização de estoque criado com sucesso.
+19/05/2022 06:43:42 PM - INFO:conexão com o banco de dados efetuada com sucesso.
+19/05/2022 06:43:42 PM - INFO:Iniciando pesquisa de nodrops
+19/05/2022 06:43:42 PM - INFO:transações de nodrop selecionadas com sucesso.
+19/05/2022 06:43:43 PM - INFO:transações de nodrop selecionadas com sucesso.
+19/05/2022 06:43:43 PM - INFO:transações de nodrop selecionadas com sucesso.
+19/05/2022 06:43:43 PM - INFO:transações de nodrop selecionadas com sucesso.
+19/05/2022 06:43:44 PM - INFO:transações de nodrop selecionadas com sucesso.
+19/05/2022 06:43:44 PM - INFO:transações de nodrop selecionadas com sucesso.
+19/05/2022 06:43:44 PM - INFO:transações de nodrop selecionadas com sucesso.
+19/05/2022 06:43:45 PM - INFO:transações de nodrop selecionadas com sucesso.
+19/05/2022 06:43:45 PM - INFO:transações de nodrop selecionadas com sucesso.
+19/05/2022 06:43:45 PM - INFO:transações de nodrop selecionadas com sucesso.
+19/05/2022 06:43:46 PM - INFO:transações de nodrop selecionadas com sucesso.
+19/05/2022 06:43:47 PM - INFO:Nodrops encontrados: 15, Cancl encontrados: 0,Nodrops possiveis: 15, total de cancelamentos efetuados: 4, quantidade de transações que não foram encontradas : 11
+19/05/2022 06:43:47 PM - INFO:Iniciando a criação dos arquivos de importação
+19/05/2022 06:43:47 PM - INFO:Arquivo de criação de cancl criado sucesso.
+19/05/2022 06:43:57 PM - INFO:Arquivo de Update criado com sucesso.
+19/05/2022 06:44:07 PM - INFO:Arquivo de atualização de estoque criado com sucesso.
+19/05/2022 06:45:07 PM - INFO:Horario fora do especifico, aguardado 75840 segundos até a proxima execução que sera as 15:49

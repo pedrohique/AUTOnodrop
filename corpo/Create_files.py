@@ -1,6 +1,7 @@
 import pandas as pd
 from datetime import datetime, date, timedelta
 import logging
+import time
 
 
 def Create_New_Trans(dados, pasta_prontos, pasta_crib, data, data_dados):
@@ -102,11 +103,13 @@ def Update_station(dados, pasta_prontos, pasta_crib, data, data_dados):
 def Cria_Arquivos(dados, pasta_prontos, pasta_crib):
     logging.info('Iniciando a criação dos arquivos de importação')
     data = datetime.today().strftime('%Y%m%d%I%M%S')
-    data_dados = ontem = (datetime.today() - timedelta(days=1)).strftime('%d/%m/%Y')
+    data_dados = (datetime.today() - timedelta(days=1)).strftime('%Y-%m-%d')
     print(data_dados)
     resp_cancl = Create_New_Trans(dados, pasta_prontos, pasta_crib, data, data_dados)
+    time.sleep(10)
     if resp_cancl == True:
         resp_update = Update_trans(dados, pasta_prontos, pasta_crib, data, data_dados)
+        time.sleep(10)
         if resp_update == True:
             resp_statio = Update_station(dados, pasta_prontos, pasta_crib, data, data_dados)
 
