@@ -1,19 +1,17 @@
-19/05/2022 06:43:42 PM - INFO:conexão com o banco de dados efetuada com sucesso.
-19/05/2022 06:43:42 PM - INFO:Iniciando pesquisa de nodrops
-19/05/2022 06:43:42 PM - INFO:transações de nodrop selecionadas com sucesso.
-19/05/2022 06:43:43 PM - INFO:transações de nodrop selecionadas com sucesso.
-19/05/2022 06:43:43 PM - INFO:transações de nodrop selecionadas com sucesso.
-19/05/2022 06:43:43 PM - INFO:transações de nodrop selecionadas com sucesso.
-19/05/2022 06:43:44 PM - INFO:transações de nodrop selecionadas com sucesso.
-19/05/2022 06:43:44 PM - INFO:transações de nodrop selecionadas com sucesso.
-19/05/2022 06:43:44 PM - INFO:transações de nodrop selecionadas com sucesso.
-19/05/2022 06:43:45 PM - INFO:transações de nodrop selecionadas com sucesso.
-19/05/2022 06:43:45 PM - INFO:transações de nodrop selecionadas com sucesso.
-19/05/2022 06:43:45 PM - INFO:transações de nodrop selecionadas com sucesso.
-19/05/2022 06:43:46 PM - INFO:transações de nodrop selecionadas com sucesso.
-19/05/2022 06:43:47 PM - INFO:Nodrops encontrados: 15, Cancl encontrados: 0,Nodrops possiveis: 15, total de cancelamentos efetuados: 4, quantidade de transações que não foram encontradas : 11
-19/05/2022 06:43:47 PM - INFO:Iniciando a criação dos arquivos de importação
-19/05/2022 06:43:47 PM - INFO:Arquivo de criação de cancl criado sucesso.
-19/05/2022 06:43:57 PM - INFO:Arquivo de Update criado com sucesso.
-19/05/2022 06:44:07 PM - INFO:Arquivo de atualização de estoque criado com sucesso.
-19/05/2022 06:45:07 PM - INFO:Horario fora do especifico, aguardado 75840 segundos até a proxima execução que sera as 15:49
+23/05/2022 05:32:42 PM - INFO:conexão com o banco de dados efetuada com sucesso.
+23/05/2022 05:32:42 PM - INFO:Iniciando pesquisa de nodrops
+23/05/2022 05:32:43 PM - INFO:transações de nodrop selecionadas com sucesso.
+23/05/2022 05:32:43 PM - INFO:transações de nodrop selecionadas com sucesso.
+23/05/2022 05:32:43 PM - INFO:transações de nodrop selecionadas com sucesso.
+23/05/2022 05:32:43 PM - INFO:transações de nodrop selecionadas com sucesso.
+23/05/2022 05:32:44 PM - INFO:transações de nodrop selecionadas com sucesso.
+23/05/2022 05:32:44 PM - INFO:transações de nodrop selecionadas com sucesso.
+23/05/2022 05:32:44 PM - INFO:transações de nodrop selecionadas com sucesso.
+23/05/2022 05:32:45 PM - INFO:transações de nodrop selecionadas com sucesso.
+23/05/2022 05:32:45 PM - INFO:transações de nodrop selecionadas com sucesso.
+23/05/2022 05:32:45 PM - INFO:transações de nodrop selecionadas com sucesso.
+23/05/2022 05:32:45 PM - INFO:Nodrops encontrados: 10, Cancl encontrados: 0,Nodrops possiveis: 10, total de cancelamentos efetuados: 10, quantidade de transações que não foram encontradas : 0
+23/05/2022 05:32:46 PM - INFO:Iniciando a criação dos arquivos de importação
+23/05/2022 05:32:46 PM - INFO:Arquivo de criação de cancl criado sucesso.
+23/05/2022 05:32:56 PM - INFO:Arquivo de Update criado com sucesso.
+23/05/2022 05:33:06 PM - INFO:Arquivo de atualização de estoque criado com sucesso.

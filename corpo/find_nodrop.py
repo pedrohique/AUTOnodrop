@@ -23,7 +23,7 @@ def conect_db(server, port, database, uid, pwd):
 
 
 def select_trans_nodrop(eventdate, anteontem, employee, cribin,
-                        cursor):  # seleciona todas as transações especificadas no nodrop
+                        cursor, index):  # seleciona todas as transações especificadas no nodrop
     try:
         cursor.execute(
             f"select transnumber, crib, bin, item, employee, Transdate, quantity, TypeDescription, User1, User2, binqty "
@@ -31,7 +31,6 @@ def select_trans_nodrop(eventdate, anteontem, employee, cribin,
         transacoes = cursor.fetchall()
         list_trans_nodrop = []  # lista de transações possiveis para o nodrop vai retornar sempre a primeira ou index 0
         contador = 0
-
         for trans in transacoes:  # procura as transações no dia de ontem
             transnumber = trans[0]
             crib = trans[1]
@@ -51,7 +50,7 @@ def select_trans_nodrop(eventdate, anteontem, employee, cribin,
             if transdate_limpo == eventdate:
                 list_trans_nodrop.append(
                     f'{transnumber}, {crib}, {bin}, {item}, {employee_trans}, {transdate}, {quantity}, {typedesc},{user1}, {user2}, {binqty},NAO QUEDA')
-                return list_trans_nodrop[0]
+
 
         if len(list_trans_nodrop) == 0:  # Caso não encontre verifica se as transações estão na data de ante ontem
             for trans in transacoes:
@@ -70,9 +69,14 @@ def select_trans_nodrop(eventdate, anteontem, employee, cribin,
                 if transdate_limpo == anteontem:
                     list_trans_nodrop.append(
                         f'{transnumber}, {crib}, {bin}, {item}, {employee_trans}, {transdate}, {quantity}, {typedesc},{user1}, {user2}, {binqty},NAO QUEDA')
-                    return list_trans_nodrop[0]
-
         logging.info('transações de nodrop selecionadas com sucesso.')
+        if len(list_trans_nodrop) >= index:
+            return list_trans_nodrop[:index] #ADICIONADO O INDEX, AGORA SE POSSUI 2 NODROPS A SER FEITO ELE VAI ADICIONAR
+                    #NA LISTA E RETORNAR DE ACORDO COM A QUANTIDADE DE NODROP
+        else:
+            return list_trans_nodrop[0]
+
+
     except:
         logging.warning('Não foi possivel selecionar as transações de nodrop')
 
@@ -144,37 +148,39 @@ def select_nodrops(cursor, cribs, ontem, anteontem):
 
                 while cancl_to_do != 0:
 
-                    cancl_to_do -= 1 #diminui a quantidade de nodrops que não foram realizados
+
                     soma_trans_true += 1 # statisticas soma o numero de transações que podem ser canceladas
                     # print('1  cancelamento possivel')
 
 
-                    trans = select_trans_nodrop(ontem, anteontem, employee, cribin, cursor)  # chama a função que retornara a transação.
+                    trans_total = select_trans_nodrop(ontem, anteontem, employee, cribin, cursor, cancl_to_do)  # chama a função que retornara a transação.
 
                     # caso a transação ja tenha sido cancelada manualmente ela vai retornar none
-                    if trans is not None:
-
+                    cancl_to_do -= 1  # diminui a quantidade de nodrops que não foram realizados
+                    if trans_total is not None:
                         soma_trans += 1  # soma o numero de transações que foram canceladas pelo sistema
-                        # print('1 transação encontrada')
-
-
-                        '''adiciona a transação no dicionario'''
-                        trans = trans.split(',') #
-                        transnumber = trans[0].replace("'", '')
-                        crib = trans[1].replace(' ', '')
-                        bin = trans[2].replace(' ', '')
-                        item = trans[3].replace(' ', '')
-                        employee = trans[4].replace(' ', '')
-                        Transdate = trans[5]
-                        quantity = trans[6].replace(' ', '')
-                        TypeDescription = trans[7].replace(' ', '')
-                        # type_trans = trans[8]
-                        user1 = trans[8].replace(' ', '')
-                        user2 = trans[9].replace(' ', '')
-                        binqty = trans[10].replace(' ', '')
-                        # print(trans)
-                        dict_nodrops[transnumber] = [str(crib), bin, item, employee, str(Transdate), str(quantity),
-                                                     TypeDescription, user1, user2, binqty]
+                        for trans in trans_total:
+                            '''adiciona a transação no dicionario'''
+                            trans = trans.split(',') #
+                            transnumber = trans[0].replace("'", '')
+                            crib = trans[1].replace(' ', '')
+                            bin = trans[2].replace(' ', '')
+                            item = trans[3].replace(' ', '')
+                            employee = trans[4].replace(' ', '')
+                            Transdate = trans[5]
+                            quantity = trans[6].replace(' ', '')
+                            TypeDescription = trans[7].replace(' ', '')
+                            # type_trans = trans[8]
+                            user1 = trans[8].replace(' ', '')
+                            if user1 == None:
+                                user1 = ''
+                            user2 = trans[9].replace(' ', '')
+                            if user2 == None:
+                                user2 = ''
+                            binqty = trans[10].replace(' ', '')
+                            # print(trans)
+                            dict_nodrops[transnumber] = [str(crib), bin, item, employee, str(Transdate), str(quantity),
+                                                         TypeDescription, user1, user2, binqty]
                     else:
                         # print(trans)
                         soma_unfind += 1  # soma a quantidade de transações que não foram encontradas
