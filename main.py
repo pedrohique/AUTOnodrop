@@ -58,8 +58,11 @@ else:
 while True:
 
     horario = datetime.today().strftime('%H:%M') #define a hora de comparação para o funcionamento do sistema
+    # horarios.append(horario)
+    # print(cribs)
 
     if horario in horarios:
+        # print(horario)
         ontem = (datetime.today() - timedelta(days=1)).strftime('%Y-%m-%d')
         anteontem = (datetime.today() - timedelta(days=2)).strftime('%Y-%m-%d')
 

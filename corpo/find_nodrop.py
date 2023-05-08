@@ -1,7 +1,5 @@
 import pyodbc
-#from datetime import date, datetime, timedelta
 import cryptocode
-import pandas as pd
 import configparser
 import logging
 
@@ -15,11 +13,9 @@ def conect_db(server, port, database, uid, pwd):
         cursor = cnxn.cursor()
         logging.info('conexão com o banco de dados efetuada com sucesso.')
         return cursor, cnxn
-    except:
-        logging.error('não foi possivel conectar ao banco de dados')
-
-
-
+    except Exception as e:
+        print(e)
+        logging.error(f'não foi possivel conectar ao banco de dados - {e}')
 
 
 def select_trans_nodrop(eventdate, anteontem, employee, cribin,
@@ -77,8 +73,9 @@ def select_trans_nodrop(eventdate, anteontem, employee, cribin,
             return list_trans_nodrop[0]
 
 
-    except:
-        logging.warning('Não foi possivel selecionar as transações de nodrop')
+    except Exception as e:
+        print(e)
+        logging.warning(f'Não foi possivel selecionar as transações de nodrop - {e}')
 
 
 def select_nodrops(cursor, cribs, ontem, anteontem):
@@ -91,27 +88,30 @@ def select_nodrops(cursor, cribs, ontem, anteontem):
             return l
 
 
-        def count_cancel(cursor, employee, cribin, ontem):
+        def count_cancel(cursor, employee, cribin, anteontem, ontem):
+            # print(employee, cribin)
             cursor.execute(
                 f"select transnumber, RelatedKey, crib, bin, item, employee, Transdate, quantity, TypeDescription, User1, User2, binqty "
-                f"from Trans where issuedto = '{employee}' and TypeDescription = 'CANCL' and CribBin = '{cribin}' and transdate >= CONVERT(datetime, '{ontem}T00:00:00') ")
+                f"from Trans where issuedto = '{employee}' and TypeDescription = 'ISSUE' and status = 1 and CribBin = '{cribin}' and (transdate = CONVERT(datetime, '{anteontem}T00:00:00') or transdate >= CONVERT(datetime, '{ontem}T00:00:00'))")
             transacoes = cursor.fetchall()
             # print(len(transacoes), 'cancelamentos')
             # print(transacoes)
+            # print('transações', len(transacoes))
             return len(transacoes)
 
         try:
             logging.info('Iniciando pesquisa de nodrops')
             cursor.execute(
                     f"select EventLogDate, EventLogMessage from EventLog where EventLogKey is null and EventLogProgramName = 'CribMaster' and EventLogDate BETWEEN CONVERT(datetime, '{anteontem}T23:00:00') AND CONVERT(datetime, '{ontem}T23:59:59');")
-            nodrops = cursor.fetchall() #pega todos os nodrops do banco
+            nodrops = cursor.fetchall() # pega todos os nodrops do banco
+
             list_eventlog = []
             dict_nodrops = {}
-            soma_nodrops = 0 #soma o numero de nodrops
-            soma_cancelamentos = 0 #soma o numero de transações que foram canceladas manualmente
-            soma_trans = 0 #soma o numero de transações que foram canceladas pelo sistema
-            soma_trans_true = 0 #soma o numero de transações que podem ser canceladas
-            soma_unfind = 0 #soma a quantidade de transações que não foram encontradas
+            soma_nodrops = 0  # soma o numero de nodrops
+            soma_cancelamentos = 0  # soma o numero de transações que foram canceladas manualmente
+            soma_trans = 0  # soma o numero de transações que foram canceladas pelo sistema
+            soma_trans_true = 0  # soma o numero de transações que podem ser canceladas
+            soma_unfind = 0  # soma a quantidade de transações que não foram encontradas
 
 
             for i in nodrops:
@@ -128,10 +128,9 @@ def select_nodrops(cursor, cribs, ontem, anteontem):
                         list_eventlog.append([employee, cribin, crib, eventlogdate])
 
             list_eventlog_base = remove_repetidos(list_eventlog)  # remove nodrops repetidos para realizar a contagem a baixo
-
+            # print(list_eventlog_base)
+            '''---------------------------------'''
             for nodrop_unic in list_eventlog_base: #Para cada nodrop unico no eventlog separa os dados para realizar a contagem na função conunt_cancel
-                # print('----------------------------------')
-                # print(nodrop_unic)
                 employee = nodrop_unic[0]
                 cribin = nodrop_unic[1]
                 # crib = nodrop_unic[2]
@@ -139,29 +138,30 @@ def select_nodrops(cursor, cribs, ontem, anteontem):
                 contagem = list_eventlog.count(nodrop_unic)  # conta quantidade de nodrops
                 # print(contagem, 'nodrop')
 
-                count_cancel_var = count_cancel(cursor, employee, cribin,ontem)  # conta quantidade de cancelamentos para cada nodrop unico
+                count_cancel_var = count_cancel(cursor, employee, cribin, anteontem, ontem)  # conta quantidade de cancelamentos para cada nodrop unico
                 # print(count_cancel_var, 'cancelamentos')
                 soma_cancelamentos += count_cancel_var #statisticas
                 soma_nodrops += contagem #statisticas
 
+
                 cancl_to_do = contagem - count_cancel_var #nodrops que podem ser realizados
+                # print(contagem, count_cancel_var)
 
                 while cancl_to_do != 0:
 
 
-                    soma_trans_true += 1 # statisticas soma o numero de transações que podem ser canceladas
-                    # print('1  cancelamento possivel')
+                    soma_trans_true += 1  # statisticas soma o numero de transações que podem ser canceladas
 
 
                     trans_total = select_trans_nodrop(ontem, anteontem, employee, cribin, cursor, cancl_to_do)  # chama a função que retornara a transação.
-
+                    # print('transtotal', trans_total)
                     # caso a transação ja tenha sido cancelada manualmente ela vai retornar none
                     cancl_to_do -= 1  # diminui a quantidade de nodrops que não foram realizados
                     if trans_total is not None:
                         soma_trans += 1  # soma o numero de transações que foram canceladas pelo sistema
                         for trans in trans_total:
                             '''adiciona a transação no dicionario'''
-                            trans = trans.split(',') #
+                            trans = trans.split(',')
                             transnumber = trans[0].replace("'", '')
                             crib = trans[1].replace(' ', '')
                             bin = trans[2].replace(' ', '')
@@ -170,7 +170,7 @@ def select_nodrops(cursor, cribs, ontem, anteontem):
                             Transdate = trans[5]
                             quantity = trans[6].replace(' ', '')
                             TypeDescription = trans[7].replace(' ', '')
-                            # type_trans = trans[8]
+
                             user1 = trans[8].replace(' ', '')
                             if user1 == None:
                                 user1 = ''
@@ -178,7 +178,7 @@ def select_nodrops(cursor, cribs, ontem, anteontem):
                             if user2 == None:
                                 user2 = ''
                             binqty = trans[10].replace(' ', '')
-                            # print(trans)
+
                             dict_nodrops[transnumber] = [str(crib), bin, item, employee, str(Transdate), str(quantity),
                                                          TypeDescription, user1, user2, binqty]
                     else:
@@ -194,8 +194,9 @@ def select_nodrops(cursor, cribs, ontem, anteontem):
             else:
                 return 0, 0
 
-        except:
-            logging.warning('não foi possivel efetuar o select nos nodrops')
+        except Exception as e:
+            # print(e)
+            logging.warning(f'não foi possivel efetuar o select nos nodrops - {e}')
 
 
 def cria_relat(cribs, ontem, anteontem):

@@ -50,14 +50,15 @@ def Create_New_Trans(dados, pasta_prontos, pasta_crib, data, data_dados):
 
 
         df = pd.DataFrame.from_dict(dados_new)
-
+        print(pasta_prontos + f'trans-{data}.csv')
         df.to_csv(pasta_prontos + f'trans-{data}.csv', index=False)
         df.to_csv(pasta_crib + f'trans-{data}.csv', index=False)
         logging.info('Arquivo de criação de cancl criado sucesso.')
 
         return True
-    except:
-        logging.error('Arquivo de criação de Cancl não pode ser criado')
+    except Exception as e:
+        print(e)
+        logging.error(f'Arquivo de criação de Cancl não pode ser criado - {e}')
         return False
 
 
@@ -76,8 +77,9 @@ def Update_trans(dados, pasta_prontos, pasta_crib, data, data_dados):
 
         logging.info('Arquivo de Update criado com sucesso.')
         return True
-    except:
-        logging.error('Não foi possivel criar o arquivo de Update Trans')
+    except Exception as e:
+        print(e)
+        logging.error(f'Não foi possivel criar o arquivo de Update Trans - {e}')
         return False
 
 def Update_station(dados, pasta_prontos, pasta_crib, data, data_dados):
@@ -96,8 +98,9 @@ def Update_station(dados, pasta_prontos, pasta_crib, data, data_dados):
         df.to_csv(pasta_crib + f'updatestation-{data}.csv', index=False)
         logging.info('Arquivo de atualização de estoque criado com sucesso.')
         return True
-    except:
-        logging.error('Não fi possivel criar o arquivo de atualização de estoque')
+    except Exception as e:
+        print(e)
+        logging.error(f'Não fi possivel criar o arquivo de atualização de estoque{e}')
         return False
 
 def Cria_Arquivos(dados, pasta_prontos, pasta_crib):
